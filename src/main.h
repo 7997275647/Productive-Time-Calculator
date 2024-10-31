@@ -57,6 +57,8 @@ typedef enum{
 
 void protimer_init(protimer_t *mobj);
 
+event_status_t protimer_state_machine(protimer_t * mobj, event_t *e);
+
 
 
 #endif

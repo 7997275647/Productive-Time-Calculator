@@ -1,4 +1,5 @@
 #include "main.h"
+#include "Lcd.h"
 
 
 /******************************************state handlers prototypes*******************************************/
@@ -11,17 +12,21 @@ event_status_t protimer_state_handler_PAUSE(protimer_t *const mobj, event_t cons
 
 
 /*****************************************Helper functions prototypes*****************************************/
-void disp_time(int x);
+void disp_time(uint32_t time);
 void disp_clr(void);
-void disp_msg(String s);
+
 void do_beep(void);
+static void disp_msg(String s,uint8_t c , uint8_t r);
 
 
 /**Init Function**/
 
 void protimer_init(protimer_t *mobj){
+    event_t ee;
+    ee.sig = ENTRY;
     mobj->active_state =IDLE;
     mobj->pro_time = 0;
+    protimer_state_machine(mobj, &ee);
 
 }
 
@@ -58,7 +63,8 @@ event_status_t protimer_state_machine(protimer_t * mobj, event_t *e){
                 mobj->current_time = 0;
                 mobj->elapsed_time = 0;
                 disp_time(0);
-                disp_msg("Set Time");
+                disp_msg("Set",0,0);
+                disp_msg("Time",0,1);
                 return EVENT_HANDLED;
 
             }
@@ -146,7 +152,7 @@ event_status_t protimer_state_machine(protimer_t * mobj, event_t *e){
         switch (e->sig){
             case ENTRY:{
                 disp_time(mobj->pro_time);
-                disp_msg("Productive Time");
+                disp_msg("Productive Time",1,1);
                 return EVENT_HANDLED;
 
             }
@@ -217,7 +223,7 @@ event_status_t protimer_state_machine(protimer_t * mobj, event_t *e){
     event_status_t protimer_state_handler_PAUSE(protimer_t *const mobj, event_t const*const e){
         switch (e->sig){
             case ENTRY:{
-                disp_msg("Paused");
+                disp_msg("Paused",5,1);
                 return EVENT_HANDLED;
             }
             case EXIT:{
@@ -260,19 +266,40 @@ event_status_t protimer_state_machine(protimer_t * mobj, event_t *e){
 
     /**************************************Helper functions***************************************/
 
-    void disp_time(int x){
+    static void disp_time(uint32_t time){
+        //char buf[16];
+        String time_msg;
 
+        uint16_t m = time / 60;
+        uint8_t s = time % 60;
+        
+        //snprintf(buf,10,"%03d:%02d",m,s);
+
+        
+        time_msg = String(m);
+        time_msg.concat(':');
+        time_msg.concat(String(s));
+        
+        //Serial.println(time_msg);
+
+        //time_msg = (String)buf;
+        lcd_set_cursor(5,0);
+        lcd_print_string(time_msg);
     }
 
-    void do_beep(void){
-
+    static void disp_msg(String s,uint8_t c , uint8_t r){
+        Serial.println("DIS");
+        lcd_set_cursor(c,r);
+        lcd_print_string(s);
+    }
+    static void do_beep(void){
+        tone(PIN_BUZZER, 4000, 25);
     }
 
-    void disp_msg(String s){
 
-    }
 
     void disp_clr(void){
+        lcd_clear();
 
     }
 

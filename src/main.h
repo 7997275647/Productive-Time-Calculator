@@ -3,6 +3,28 @@
 
 #include <Arduino.h>
 
+#define PIN_BUTTON1 2
+#define PIN_BUTTON2 3
+#define PIN_BUTTON3 4
+
+// Pins of LCD
+#define PIN_LCD_RS 5
+#define PIN_LCD_RW 6
+#define PIN_LCD_EN 7
+#define PIN_LCD_D4 8
+#define PIN_LCD_D5 9
+#define PIN_LCD_D6 10
+#define PIN_LCD_D7 11
+
+//button pad values
+#define BTN_PAD_INC_TIME 4
+#define BTN_PAD_DEC_TIME 2
+#define BTN_PAD_ABRT 6
+#define BTN_PAD_START_PAUSE 1
+
+#define PIN_BUZZER 12
+
+
 //Signals of protimer state machine
 typedef enum{
     TIME_TICK,
@@ -53,6 +75,13 @@ typedef enum{
     EVENT_IGNORED,
     EVENT_TRANSITION
 }event_status_t;
+
+
+typedef enum{
+    NOT_PRESSED,
+    PRESSED,
+    BOUNCE
+}button_state_t;
 
 
 void protimer_init(protimer_t *mobj);
